@@ -50,6 +50,15 @@ async fn main() {
         match fetch::fetch_url(url).await {
             Ok(content) => {
             println!("Successfully fetched content from {}", url);
+
+                match scraper::scrape_title(&content){
+                    Ok(title) => {
+                        println!("Title of {}: {}", url, title);
+                    }
+                    Err(err) => {
+                        eprintln!("Failed to scrape title from {}: {}", url, err);
+                    }
+                }
             }
             Err(err) => {
                 eprintln!("Failed to fetch content from {}: {}", url, err);
