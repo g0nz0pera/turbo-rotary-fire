@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `cargo test`
+*.test
+
+# Rust/Cargo specific files
+/target
+**/target
+**/Cargo.lock
+
+# IDE specific files
+.idea/
+.vscode/
+*.rs.bk
+
+# DB
+*.db
