@@ -1,6 +1,7 @@
 mod cli;
 mod scraper;
 mod fetch;
+mod models;
 
 use clap::{Arg, Command};
 use cli::Cli;
