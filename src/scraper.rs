@@ -10,8 +10,7 @@ pub enum ScrapeType {
 }
 
 /// Function to extract the title from the html
-pub fn scrape_title(html_content: &str, scrape_type: ScrapeType) -> Result<String, Box<dyn Error>> {
-
+pub fn scrape(html_content: &str, scrape_type: ScrapeType) -> Result<String, Box<dyn Error>> {
     // Parse the html content
     let document = Html::parse_document(html_content);
 
@@ -24,7 +23,8 @@ pub fn scrape_title(html_content: &str, scrape_type: ScrapeType) -> Result<Strin
     };
 
     // Find the first title element and extract its text
-    let element = document.select(&selector)
+    let element = document
+        .select(&selector)
         .next()
         .ok_or("No title Found")?
         .text()

@@ -39,3 +39,37 @@ cargo run -- --urls https://example.com https://rust-lang.org --format json
 4. You can also use the `--format csv` option to save the data in CSV format.
 5. Use the `--help` option to see all available options.
 6. Enjoy scraping data concurrently with Rust!
+
+## Testing: 
+
+### Valid Output Command Format:
+Here’s a reminder of the format you should use when running your Rust scraper from the command line:
+```bash
+cargo run -- --urls <url1> <url2> --format <csv|json> --scrape-option <title|product-name|price|custom-selector>
+```
+#### Expected Output:
+You should see something like:
+```bash
+Successfully fetched content from https://example.com
+Scraped data from https://example.com: Example Domain
+```
+
+### Valid URL but Invalid Scraping Selector
+```bash
+cargo run -- --urls https://example.com --format json --scrape-option ".invalid-class"
+```
+If you provide a valid URL but an invalid scraping selector, you should see an error message like:
+```bash
+Failed to scrape https://example.com: No matching element found for the given selector
+```
+
+## Examples
+### Testing with json format
+```bash
+cargo run -- --urls https://example.com https://rust-lang.org --format json --scrape-option title
+```
+
+### Testing with format csv
+```bash
+cargo run -- --urls https://example.com https://rust-lang.org --format csv --scrape-option title
+```

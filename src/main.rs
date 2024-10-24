@@ -1,63 +1,46 @@
 mod cli;
-mod scraper;
 mod fetch;
 mod models;
+mod scraper;
 
-use clap::{Arg, Command};
 use cli::Cli;
+use scraper::ScrapeType;
+use anyhow::Result;
 
 #[tokio::main]
-async fn main() {
-    let matches = Command::new("Multi Scrapper")
-        .author("g0ng0n")
-        .version("0.1")
-        .about("Scraping multiples sites and stores data")
-        .arg(
-            Arg::new("urls")
-                .short('u')
-                .long("urls")
-                .value_name("URLS")
-                .help("A list of URLS to scrape")
-                .num_args(1..)
-                .required(true),
-        ).arg(
-            Arg::new("format")
-                .short('f')
-                .long("format")
-                .value_name("FORMAT")
-                .help("The output format: csv or Json")
-                .required(true)
-                .value_parser(["json", "csv"]),
-    ).get_matches();
-
-    // Get the URLs and output format
-    let urls: Vec<String> = matches.get_many::<String>("urls")
-        .expect("A List of URLS is required.")
-        .cloned()
-        .collect();
-
-    let output_format = matches.get_one::<String>("format")
-        .expect("An output format is required. (CSV or JSON)")
-        .to_string();
+async fn main() -> Result<()> {
+    let mut cli = Cli::parse_args();
 
     // Printing the input values for confirmation
-    println!("Scraping the following URLs: {:?}", urls);
-    println!("Data will be saved in {} format", output_format);
+    println!("Scraping the following URLs: {:?}", cli.get_urls());
+    println!("Data will be saved in {} format", cli.get_output_format());
+    println!("Scrape output format: {}", cli.get_scrape_option());
 
-    // You can store these in a struct for later use
-    //let cli = Cli::new(urls, output_format);
+    let urls = cli.get_urls().clone();
+    let scrape_option = cli.get_scrape_option().clone();
 
-    for url in &urls {
+    for url in urls.iter() {
         match fetch::fetch_url(url).await {
             Ok(content) => {
-            println!("Successfully fetched content from {}", url);
+                println!("Successfully fetched content from {}", url);
 
-                match scraper::scrape_title(&content){
-                    Ok(title) => {
-                        println!("Title of {}: {}", url, title);
+                // Example: Scrape title or product name based on user input
+                let scrape_type = if scrape_option.eq("title") {
+                    ScrapeType::Title
+                } else if scrape_option.eq("product-name") {
+                    ScrapeType::ProductName
+                } else if scrape_option == "price" {
+                    ScrapeType::Price
+                } else {
+                    ScrapeType::Custom(cli.get_scrape_option().clone())  // Custom selector
+                };
+
+                match scraper::scrape(&content, scrape_type) {
+                    Ok(data) => {
+                        println!("Scraped data from {}: {}", url, data);
                     }
                     Err(err) => {
-                        eprintln!("Failed to scrape title from {}: {}", url, err);
+                        eprintln!("Failed to scrape content from {}: {}", url, err);
                     }
                 }
             }
@@ -66,6 +49,5 @@ async fn main() {
             }
         }
     }
-
-
+    Ok(())
 }
