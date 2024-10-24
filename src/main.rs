@@ -1,12 +1,12 @@
+mod cli;
+mod scraper;
+mod fetch;
+
 use clap::{Arg, Command};
+use cli::Cli;
 
-#[derive(Debug)]
-struct Cli {
-    urls: Vec<String>,
-    output_format: String,
-}
-
-fn main() {
+#[tokio::main]
+async fn main() {
     let matches = Command::new("Multi Scrapper")
         .author("g0ng0n")
         .version("0.1")
@@ -44,8 +44,18 @@ fn main() {
     println!("Data will be saved in {} format", output_format);
 
     // You can store these in a struct for later use
-    let cli = Cli { urls, output_format };
+    //let cli = Cli::new(urls, output_format);
 
+    for url in &urls {
+        match fetch::fetch_url(url).await {
+            Ok(content) => {
+            println!("Successfully fetched content from {}", url);
+            }
+            Err(err) => {
+                eprintln!("Failed to fetch content from {}: {}", url, err);
+            }
+        }
+    }
 
 
 }

@@ -26,3 +26,16 @@ The tool should handle multiple sites in parallel using Rust's asynchronous prog
 5. Saving Data:
    - Save scraped data to a CSV or JSON file.
    - Optionally store results in a SQLite database (build on your prior experience).
+
+--------
+
+## Instructions to run
+1. Clone the repository
+2. Run the following command to run the project:
+```bash
+cargo run -- --urls https://example.com https://rust-lang.org --format json
+```
+3. The above command will scrape the data from the given URLs and save the data in JSON format.
+4. You can also use the `--format csv` option to save the data in CSV format.
+5. Use the `--help` option to see all available options.
+6. Enjoy scraping data concurrently with Rust!
